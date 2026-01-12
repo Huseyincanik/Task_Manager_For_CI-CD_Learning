@@ -18,6 +18,9 @@
 - [API Dokümantasyonu](#-api-dokümantasyonu)
 - [Öğrenme Kaynakları](#-öğrenme-kaynakları)
 
+<img width="1920" height="1080" alt="Ekran görüntüsü 2026-01-12 083921" src="https://github.com/user-attachments/assets/f6265634-41c4-44e9-a7fd-3122eecfa0e2" />
+
+
 ## ✨ Özellikler
 
 ### Uygulama Özellikleri
@@ -438,3 +441,4 @@ DevOps Learning Project - GitHub Actions CI/CD Tutorial
 - ✅ Release automation
 
 **Happy Learning! 🚀**
+
