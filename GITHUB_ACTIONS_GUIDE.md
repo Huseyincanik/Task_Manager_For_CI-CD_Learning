@@ -7,7 +7,7 @@ Bu rehber, GitHub Actions kullanarak CI/CD pipeline'larını öğrenmeniz için 
 ## 📚 Temel Kavramlar
 
 ### Workflow Nedir?
-Workflow, otomatik olarak çalışan bir iş akışıdır. `.github/workflows/` dizininde YAML dosyaları olarak tanımlanır.
+Workflow, otomatik olarak çalışan bir iş akışıdır. `.github_action/workflows/` dizininde YAML dosyaları olarak tanımlanır.
 
 ### Job Nedir?
 Bir workflow içinde çalışan bağımsız görevlerdir. Paralel veya sıralı çalışabilir.
@@ -20,7 +20,7 @@ Tekrar kullanılabilir, hazır komut setleridir (örn: `actions/checkout@v4`).
 
 ## 🔄 CI Workflow Detayları
 
-### Dosya: `.github/workflows/ci.yml`
+### Dosya: `.github_action/workflows/ci.yml`
 
 ```yaml
 name: CI - Test & Build
@@ -282,7 +282,7 @@ git tag -a v1.0.1 -m "Release v1.0.1"
 
 ### 1. Workflow Organizasyonu
 ```
-.github/workflows/
+.github_action/workflows/
 ├── ci.yml              # Her PR'da çalışır
 ├── code-quality.yml    # Her PR'da çalışır
 ├── docker.yml          # Main'e merge'de çalışır
@@ -315,7 +315,7 @@ jobs:
 ### 4. Reusable Workflows
 
 ```yaml
-# .github/workflows/reusable-test.yml
+# .github_action/workflows/reusable-test.yml
 on:
   workflow_call:
     inputs:
@@ -336,7 +336,7 @@ jobs:
 ## 🔧 Troubleshooting
 
 ### Workflow Çalışmıyor
-1. `.github/workflows/` dizininde mi?
+1. `.github_action/workflows/` dizininde mi?
 2. YAML syntax doğru mu? (yamllint.com)
 3. Trigger doğru mu? (on: push, pull_request)
 4. Branch filter doğru mu?
@@ -400,3 +400,4 @@ jobs:
 ---
 
 **Happy Learning! 🚀**
+
