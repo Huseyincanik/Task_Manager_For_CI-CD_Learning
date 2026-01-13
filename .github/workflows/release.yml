@@ -6,7 +6,6 @@ on:
       - 'v*'
 
 jobs:
-  # Create Release
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
@@ -18,48 +17,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Generate changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v4.1.0
-        with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            ## 🚀 What's New
-            
-            ${{ steps.changelog.outputs.changelog }}
-            
-            ## 📦 Docker Images
-            
-            - Backend: `ghcr.io/${{ github.repository }}-backend:${{ github.ref_name }}`
-            - Frontend: `ghcr.io/${{ github.repository }}-frontend:${{ github.ref_name }}`
-            
-            ## 🔧 Installation
-            
-            ```bash
-            docker-compose pull
-            docker-compose up -d
-            ```
-          draft: false
-          prerelease: false
-
-  # Build and Upload Assets
-  build-assets:
-    name: Build Release Assets
-    runs-on: ubuntu-latest
-    needs: create-release
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -76,12 +33,34 @@ jobs:
         run: |
           tar -czf frontend-build-${{ github.ref_name }}.tar.gz -C frontend/build .
       
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.1.0
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./frontend-build-${{ github.ref_name }}.tar.gz
-          asset_name: frontend-build-${{ github.ref_name }}.tar.gz
-          asset_content_type: application/gzip
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## 🚀 What's New
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## 📦 Docker Images
+            
+            - Backend: `ghcr.io/${{ github.repository }}-backend:${{ github.ref_name }}`
+            - Frontend: `ghcr.io/${{ github.repository }}-frontend:${{ github.ref_name }}`
+            
+            ## 🔧 Installation
+            
+            ```bash
+            docker-compose pull
+            docker-compose up -d
+            ```
+          files: |
+            frontend-build-${{ github.ref_name }}.tar.gz
+          draft: false
+          prerelease: false
