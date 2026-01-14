@@ -7,6 +7,7 @@
 
 **DevOps CI/CD öğrenmek için kapsamlı bir demo projesi.** Bu proje, modern bir web uygulaması (Task Manager) ve profesyonel GitHub Actions CI/CD pipeline'ları içerir.
 
+
 ## 📋 İçindekiler
 
 - [Özellikler](#-özellikler)
@@ -441,4 +442,5 @@ DevOps Learning Project - GitHub Actions CI/CD Tutorial
 - ✅ Release automation
 
 **Happy Learning! 🚀**
+
 
