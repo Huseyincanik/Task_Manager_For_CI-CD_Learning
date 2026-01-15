@@ -1,8 +1,3 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+// This file has been replaced with comprehensive tests in __tests__/App.test.js
+// See __tests__/ directory for all test files
 
-test('renders DevOps Task Manager heading', () => {
-    render(<App />);
-    const headingElement = screen.getByText(/DevOps Task Manager/i);
-    expect(headingElement).toBeInTheDocument();
-});
