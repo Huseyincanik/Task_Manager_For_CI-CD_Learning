@@ -57,6 +57,7 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x, 20.x]
+      fail-fast: false  # Continue testing other versions even if one fails
     
     steps:
       - name: Checkout code
@@ -73,23 +74,78 @@ jobs:
         working-directory: ./frontend
         run: npm ci
       
-      - name: Run tests
+      - name: Run tests with detailed output
         working-directory: ./frontend
-        run: npm test -- --coverage --watchAll=false
+        run: |
+          npm test -- \
+            --coverage \
+            --watchAll=false \
+            --verbose \
+            --testLocationInResults \
+            --json \
+            --outputFile=test-results.json
+        continue-on-error: true
+        id: test-run
       
-      - name: Upload coverage reports
+      - name: Display test summary
+        if: always()
+        working-directory: ./frontend
+        run: |
+          echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f test-results.json ]; then
+            echo "✅ Tests completed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Coverage Report" >> $GITHUB_STEP_SUMMARY
+            if [ -d coverage ]; then
+              cat coverage/coverage-summary.txt 2>/dev/null || echo "Coverage summary not available" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "❌ Tests failed to complete" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Check coverage threshold
+        if: always()
+        working-directory: ./frontend
+        run: |
+          echo "Checking coverage thresholds..."
+          npm test -- --coverage --coverageThreshold='{"global":{"branches":60,"functions":60,"lines":70,"statements":70}}' --watchAll=false || echo "Coverage threshold not met (this is a warning)"
+        continue-on-error: true
+      
+      - name: Upload coverage to Codecov
+        if: always()
         uses: codecov/codecov-action@v3
         with:
           files: ./frontend/coverage/lcov.info
           flags: frontend
-          name: frontend-coverage
+          name: frontend-coverage-node-${{ matrix.node-version }}
+          fail_ci_if_error: false
       
-      - name: Archive test results
+      - name: Archive test results and coverage
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: frontend-test-results-${{ matrix.node-version }}
-          path: frontend/coverage/
+          name: frontend-test-results-node-${{ matrix.node-version }}
+          path: |
+            frontend/coverage/
+            frontend/test-results.json
+          retention-days: 30
+      
+      - name: Archive failed test screenshots (if any)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-failures-node-${{ matrix.node-version }}
+          path: |
+            frontend/coverage/
+            frontend/test-results.json
+          retention-days: 7
+      
+      - name: Fail job if tests failed
+        if: steps.test-run.outcome == 'failure'
+        run: |
+          echo "❌ Tests failed! Check the artifacts for details."
+          exit 1
 
   # Frontend Build
   frontend-build:

@@ -1,0 +1,22 @@
+name : main
+
+on :
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+job:
+  job1:
+    name: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  job2:
+    name: job2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
